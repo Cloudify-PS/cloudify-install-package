@@ -1,0 +1,29 @@
+manager-blueprints-url: https://github.com/cloudify-cosmo/cloudify-manager-blueprints/archive/4.2m7.tar.gz
+cli-package-urls:
+  - http://repository.cloudifysource.org/cloudify/4.2.0/m7-release/cloudify-cli-4.2m7.exe
+  - http://repository.cloudifysource.org/cloudify/4.2.0/m7-release/cloudify-cli-4.2m7.rpm
+  - http://repository.cloudifysource.org/cloudify/4.2.0/m7-release/cloudify-cli-4.2m7.pkg
+mgr-resources-package: http://repository.cloudifysource.org/cloudify/4.2.0/m7-release/cloudify-manager-resources-4.2m7.tar.gz
+wagon-files:
+  - https://github.com/cloudify-cosmo/cloudify-openstack-plugin/releases/download/2.2.0/cloudify_openstack_plugin-2.2.0-py27-none-linux_x86_64-centos-Core.wgn
+  - https://github.com/cloudify-cosmo/cloudify-openstack-plugin/releases/download/2.2.0/cloudify_openstack_plugin-2.2.0-py27-none-linux_x86_64-redhat-Maipo.wgn
+  - http://repository.cloudifysource.org/cloudify/wagons/cloudify-vsphere-plugin/2.3.0/cloudify_vsphere_plugin-2.3.0-py27-none-linux_x86_64-centos-Core.wgn
+  - http://repository.cloudifysource.org/cloudify/wagons/cloudify-vsphere-plugin/2.3.0/cloudify_vsphere_plugin-2.3.0-py27-none-linux_x86_64-redhat-Maipo.wgn
+  - https://github.com/cloudify-incubator/cloudify-awssdk-plugin/releases/download/1.0.0/cloudify_awssdk_plugin-1.0.0-py27-none-any-none-none.wgn
+  - http://repository.cloudifysource.org/cloudify/wagons/cloudify-aws-plugin/1.5/cloudify_aws_plugin-1.5-py27-none-linux_x86_64-centos-Core.wgn
+  - http://repository.cloudifysource.org/cloudify/wagons/cloudify-aws-plugin/1.5/cloudify_aws_plugin-1.5-py27-none-linux_x86_64-redhat-Maipo.wgn
+  - https://github.com/cloudify-cosmo/cloudify-gcp-plugin/releases/download/1.0.1/cloudify_gcp_plugin-1.0.1-py27-none-linux_x86_64-centos-Core.wgn
+  - https://github.com/cloudify-incubator/cloudify-azure-plugin/releases/download/1.4.3/cloudify_azure_plugin-1.4.3-py27-none-linux_x86_64.wgn
+  - https://github.com/cloudify-incubator/cloudify-kubernetes-plugin/releases/download/1.2.1/cloudify_kubernetes_plugin-1.2.1-py27-none-linux_x86_64-centos-Core.wgn
+  - https://github.com/cloudify-cosmo/cloudify-netconf-plugin/releases/download/0.2.0/cloudify_netconf_plugin-0.2.0-py27-none-linux_x86_64-centos-Core.wgn
+  - https://github.com/cloudify-incubator/cloudify-utilities-plugin/releases/download/1.3.0/cloudify_utilities_plugin-1.3.0-py27-none-linux_x86_64-centos-Core.wgn
+  - http://repository.cloudifysource.org/cloudify/wagons/cloudify-fabric-plugin/1.5/cloudify_fabric_plugin-1.5-py27-none-linux_x86_64-centos-Core.wgn
+  - http://repository.cloudifysource.org/cloudify/wagons/cloudify-fabric-plugin/1.5/cloudify_fabric_plugin-1.5-py27-none-manylinux1_x86_64-redhat-Maipo.wgn
+  - http://repository.cloudifysource.org/cloudify/wagons/cloudify-diamond-plugin/1.3.6/cloudify_diamond_plugin-1.3.6-py26-none-linux_x86_64-centos-Final.wgn
+  - http://repository.cloudifysource.org/cloudify/wagons/cloudify-diamond-plugin/1.3.6/cloudify_diamond_plugin-1.3.6-py27-none-linux_x86_64-Ubuntu-trusty.wgn
+  - http://repository.cloudifysource.org/cloudify/wagons/cloudify-diamond-plugin/1.3.6/cloudify_diamond_plugin-1.3.6-py27-none-linux_x86_64-redhat-Maipo.wgn
+  - http://repository.cloudifysource.org/cloudify/wagons/cloudify-docker-plugin/1.3.2/cloudify_docker_plugin-1.3.2-py27-none-linux_x86_64-centos-Core.wgn
+  - http://repository.cloudifysource.org/cloudify/wagons/cloudify-docker-plugin/1.3.2/cloudify_docker_plugin-1.3.2-py27-none-linux_x86_64-Ubuntu-trusty.wgn
+  - http://repository.cloudifysource.org/cloudify/wagons/cloudify-psutil-plugin/1.0.2/cloudify_psutil_plugin-1.0.2-py27-none-win32-none-none.wgn
+  - http://repository.cloudifysource.org/cloudify/wagons/cloudify-host-pool-plugin/1.5/cloudify_host_pool_plugin-1.5-py27-none-linux_x86_64-centos-Core.wgn
+
