@@ -51,11 +51,14 @@ fi
 echo "Installing RPM(s)"
 
 for rpm_file in ../cli/*.rpm; do
+    rpm_name=$(sudo rpm -qp ${rpm_file})
+
     set +e
-    sudo rpm -qp ${rpm_file}
+    sudo rpm -q ${rpm_name}
+    rpm_rc=$?
     set -e
 
-    if [[ $? -eq 0 ]]; then
+    if [ ${rpm_rc} -eq 0 ]; then
         echo "Package ${rpm_file} already installed; skipping"
     else
         echo "Installing ${rpm_file}"
@@ -78,8 +81,8 @@ EOF
 
 echo "Inputs file:"
 echo "------------"
-echo
 cat ${TEMP_INPUTS}
+echo "------------"
 
 # Perform the bootstrap.
 echo "Starting the bootstrap process"
