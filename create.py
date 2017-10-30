@@ -97,7 +97,8 @@ for x in ['resources', 'bin']:
 
 with tarfile.open(args.o, mode='w') as output_file:
     for name in os.listdir(archive_root):
-        output_file.add(os.path.join(archive_root, name), arcname=name)
+        output_file.add(os.path.join(archive_root, name),
+                        arcname=os.path.join('cloudify', name))
 
 # Remove temporaries.
 os.remove(mgr_blueprints_archive)
