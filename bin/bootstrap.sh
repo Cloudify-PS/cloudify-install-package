@@ -48,6 +48,21 @@ if [ -z "${PRIVATE_IP}" -o -z "${PUBLIC_IP}" -o -z "${SSH_KEY_FILENAME}" ] ; the
     exit 1
 fi
 
+echo "Installing RPM(s)"
+
+for rpm_file in ../cli/*.rpm; do
+    set +e
+    sudo rpm -qp ${rpm_file}
+    set -e
+
+    if [[ $? -eq 0 ]]; then
+        echo "Package ${rpm_file} already installed; skipping"
+    else
+        echo "Installing ${rpm_file}"
+        sudo yum -y install ${rpm_file}
+    fi
+done
+
 TEMP_INPUTS=$(mktemp --suffix=.yaml)
 
 echo "Writing temporary inputs into ${TEMP_INPUTS}"
@@ -62,9 +77,9 @@ manager_resources_package: file://$(pwd)/../manager-resources-package.tar.gz
 EOF
 
 echo "Inputs file:"
+echo "------------"
+echo
 cat ${TEMP_INPUTS}
-
-exit 1
 
 # Perform the bootstrap.
 echo "Starting the bootstrap process"
