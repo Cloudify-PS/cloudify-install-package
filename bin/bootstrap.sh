@@ -1,13 +1,13 @@
 #!/bin/bash -e
 
 show_syntax() {
-    echo "Syntax: ${SCRIPT_NAME} -i|--private-ip <private_ip> -e|--public-ip <public_ip> -k|--key <key_file> [-u|--user <ssh_user>] [--ssl]" >&2
+    echo "Syntax: ${SCRIPT_NAME} -i|--private-ip <private_ip> -e|--public-ip <public_ip> -k|--key <key_file> [-u|--user <ssh_user>] [-x|--extra <extra_inputs_yaml>] [--ssl]" >&2
 }
 
 SCRIPT_NAME=$0
 
 set +e
-PARSED_CMDLINE=$(getopt -o i:e:u:k:s --long private-ip:,public-ip:,user:,key:,ssl --name "${SCRIPT_NAME}" -- "$@")
+PARSED_CMDLINE=$(getopt -o i:e:u:k:x:s --long private-ip:,public-ip:,user:,key:,extra:,ssl --name "${SCRIPT_NAME}" -- "$@")
 set -e
 
 if [[ $? -ne 0 ]]; then
@@ -17,6 +17,7 @@ fi
 
 eval set -- "${PARSED_CMDLINE}"
 
+EXTRA_INPUTS_YAML=
 SSL_ENABLED=false
 SSH_USER=$(id -un)
 
@@ -41,6 +42,10 @@ while true ; do
         -s|--ssl)
             SSL_ENABLED=true
             shift
+            ;;
+        -x|--extra)
+            EXTRA_INPUTS_YAML="$2"
+            shift 2
             ;;
         --)
             shift
@@ -86,6 +91,10 @@ manager_resources_package: file://$(pwd)/../manager-resources-package.tar.gz
 ssl_enabled: ${SSL_ENABLED}
 EOF
 
+if [ -n "${EXTRA_INPUTS_YAML}" ]; then
+    cat ${EXTRA_INPUTS_YAML} >> ${TEMP_INPUTS}
+fi
+
 echo "Inputs file:"
 echo "------------"
 cat ${TEMP_INPUTS}
@@ -93,7 +102,7 @@ echo "------------"
 
 # Perform the bootstrap.
 echo "Starting the bootstrap process"
-cfy bootstrap /opt/cfy/cloudify-manager-blueprints/simple-manager-blueprint.yaml -i ${TEMP_INPUTS} $@
+cfy bootstrap /opt/cfy/cloudify-manager-blueprints/simple-manager-blueprint.yaml -i ${TEMP_INPUTS} -vv
 
 rm -f ${TEMP_INPUTS}
 
@@ -107,7 +116,8 @@ sudo chmod -R go-w /opt/manager/resources/spec
 # Upload Wagons.
 for wagon in ../wagons/*.wgn; do
     echo "Uploading plugin: ${wagon}"
-    cfy plugins upload ${wagon}
+    # Use "file://" in order to circumvent https://cloudifysource.atlassian.net/browse/CFY-7443
+    cfy plugins upload file://$(pwd)/${wagon}
 done
 
 echo "Done."
