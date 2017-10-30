@@ -1,13 +1,13 @@
 #!/bin/bash -e
 
 show_syntax() {
-    echo "Syntax: ${SCRIPT_NAME} -i|--private-ip <private_ip> -e|--public-ip <public_ip> -k|--key <key_file> [-u|--user <ssh_user>]" >&2
+    echo "Syntax: ${SCRIPT_NAME} -i|--private-ip <private_ip> -e|--public-ip <public_ip> -k|--key <key_file> [-u|--user <ssh_user>] [--ssl]" >&2
 }
 
 SCRIPT_NAME=$0
 
 set +e
-PARSED_CMDLINE=$(getopt -o i:e:u:k: --long private-ip:,public-ip:,user:,key: --name "${SCRIPT_NAME}" -- "$@")
+PARSED_CMDLINE=$(getopt -o i:e:u:k:s --long private-ip:,public-ip:,user:,key:,ssl --name "${SCRIPT_NAME}" -- "$@")
 set -e
 
 if [[ $? -ne 0 ]]; then
@@ -16,6 +16,9 @@ if [[ $? -ne 0 ]]; then
 fi
 
 eval set -- "${PARSED_CMDLINE}"
+
+SSL_ENABLED=false
+SSH_USER=$(id -un)
 
 while true ; do
     case "$1" in
@@ -35,13 +38,16 @@ while true ; do
             SSH_KEY_FILENAME="$2"
             shift 2
             ;;
-        --) shift ; break ;;
+        -s|--ssl)
+            SSL_ENABLED=true
+            shift
+            ;;
+        --)
+            shift
+            break
+            ;;
     esac
 done
-
-if [ -z "${SSH_USER}" ] ; then
-    SSH_USER=$(id -un)
-fi
 
 if [ -z "${PRIVATE_IP}" -o -z "${PUBLIC_IP}" -o -z "${SSH_KEY_FILENAME}" ] ; then
     show_syntax
@@ -77,6 +83,7 @@ ssh_user: ${SSH_USER}
 ssh_key_filename: ${SSH_KEY_FILENAME}
 dsl_resources: {}
 manager_resources_package: file://$(pwd)/../manager-resources-package.tar.gz
+ssl_enabled: ${SSL_ENABLED}
 EOF
 
 echo "Inputs file:"
