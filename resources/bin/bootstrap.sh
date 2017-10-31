@@ -157,7 +157,6 @@ sudo chmod -R go-w /opt/manager/resources/spec
 # Upload Wagons.
 if [ -z "${SKIP_PLUGINS}" ] ; then
     for wagon in ../wagons/*.wgn; do
-        echo "Uploading plugin: ${wagon}"
         # Skip validation as per https://cloudifysource.atlassian.net/browse/CFY-7443
         cfy plugins upload --skip-local-plugins-validation ${wagon}
     done
