@@ -1,10 +1,31 @@
 #!/bin/bash -e
 
 show_syntax() {
-    echo "Syntax: ${SCRIPT_NAME} --private-ip <private_ip> --public-ip <public_ip> --key <key_file> [--user <ssh_user>] [--extra <extra_inputs_yaml>] [--ssl] [--admin-password <password>] [--skip-plugins] [--skip-cli]" >&2
+    cat << EOF >&2
+Syntax: ${SCRIPT_NAME} --private-ip <private_ip> --public-ip <public_ip> [--user <ssh_user>]
+        --key <key_file> [--extra <extra_inputs_yaml>] [--ssl] [--admin-password <password>]
+        [--skip-plugins] [--skip-cli]
+
+--private-ip        this machine's IP to be used for internal communications. Usually,
+                    this is the machine's private IP.
+--public-ip         this machine's IP to be used for communicating via the REST API or
+                    CLI
+--user              (optional) the user to use for SSH'ing into this machine. If not
+                    provided, the current user is used.
+--key               private key to use to SSH into this machine.
+--extra             an additional YAML file to use for inputs.
+--ssl               (optional) if specified, enable SSL on the REST API layer.
+--admin-password    (optional) password to assign to the 'admin' user. If not provided,
+                    then a password is automatically generated.
+--skip-plugins      (optional) if specified, skip the uploading of plugins to the manager
+                    after bootstrap.
+--skip-cli          (optional) if specified, skip the installation of the CLI RPM before
+                    bootstrap. Note that the CLI RPM must be installed in order for the
+                    bootstrap to work.
+EOF
 }
 
-SCRIPT_NAME=$0
+SCRIPT_NAME=$(basename $0)
 
 set +e
 PARSED_CMDLINE=$(getopt -o '' --long private-ip:,public-ip:,user:,key:,extra:,ssl,admin-password:,skip-plugins,skip-cli --name "${SCRIPT_NAME}" -- "$@")

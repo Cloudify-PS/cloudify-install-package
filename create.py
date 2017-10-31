@@ -88,7 +88,13 @@ shutil.copy(os.path.join(os.path.dirname(__name__), 'README.md'),
             archive_root)
 
 # Copy additional dirs
-for x in ['bin']:
+for name in os.listdir('resources'):
+    if os.path.isdir(name):
+        shutil.copytree(name, os.path.join(archive_root, name))
+    else:
+        shutil.copy(name, archive_root)
+
+for x in ['resources', 'bin']:
     shutil.copytree(x, os.path.join(archive_root, x))
 
 # Create archive.
