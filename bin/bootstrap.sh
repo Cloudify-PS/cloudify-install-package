@@ -7,7 +7,7 @@ show_syntax() {
 SCRIPT_NAME=$0
 
 set +e
-PARSED_CMDLINE=$(getopt --long private-ip:,public-ip:,user:,key:,extra:,ssl,admin-password:,skip-plugins,skip-cli --name "${SCRIPT_NAME}" -- "$@")
+PARSED_CMDLINE=$(getopt -o '' --long private-ip:,public-ip:,user:,key:,extra:,ssl,admin-password:,skip-plugins,skip-cli --name "${SCRIPT_NAME}" -- "$@")
 set -e
 
 if [[ $? -ne 0 ]]; then
