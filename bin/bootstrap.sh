@@ -1,13 +1,13 @@
 #!/bin/bash -e
 
 show_syntax() {
-    echo "Syntax: ${SCRIPT_NAME} -i|--private-ip <private_ip> -e|--public-ip <public_ip> -k|--key <key_file> [-u|--user <ssh_user>] [-x|--extra <extra_inputs_yaml>] [--ssl] [-p|--admin-password <password>]" >&2
+    echo "Syntax: ${SCRIPT_NAME} --private-ip <private_ip> --public-ip <public_ip> --key <key_file> [--user <ssh_user>] [--extra <extra_inputs_yaml>] [--ssl] [--admin-password <password>] [--skip-plugins] [--skip-cli]" >&2
 }
 
 SCRIPT_NAME=$0
 
 set +e
-PARSED_CMDLINE=$(getopt -o i:e:u:k:x:sp: --long private-ip:,public-ip:,user:,key:,extra:,ssl,admin-password: --name "${SCRIPT_NAME}" -- "$@")
+PARSED_CMDLINE=$(getopt --long private-ip:,public-ip:,user:,key:,extra:,ssl,admin-password:,skip-plugins,skip-cli --name "${SCRIPT_NAME}" -- "$@")
 set -e
 
 if [[ $? -ne 0 ]]; then
@@ -19,38 +19,48 @@ eval set -- "${PARSED_CMDLINE}"
 
 EXTRA_INPUTS_YAML=
 ADMIN_PASSWORD=
+SKIP_PLUGINS=
+SKIP_CLI=
 SSL_ENABLED=false
 SSH_USER=$(id -un)
 
 while true ; do
     case "$1" in
-        -i|--private-ip)
+        --private-ip)
             PRIVATE_IP="$2"
             shift 2
             ;;
-        -e|--public-ip)
+        --public-ip)
             PUBLIC_IP="$2"
             shift 2
             ;;
-        -u|--user)
+        --user)
             SSH_USER="$2"
             shift 2
             ;;
-        -k|--key)
+        --key)
             SSH_KEY_FILENAME="$2"
             shift 2
             ;;
-        -s|--ssl)
+        --ssl)
             SSL_ENABLED=true
             shift
             ;;
-        -x|--extra)
+        --extra)
             EXTRA_INPUTS_YAML="$2"
             shift 2
             ;;
-        -p|--admin-password)
+        --admin-password)
             ADMIN_PASSWORD="$2"
             shift 2
+            ;;
+        --skip-plugins)
+            SKIP_PLUGINS=true
+            shift
+            ;;
+        --skip-cli)
+            SKIP_CLI=true
+            shift
             ;;
         --)
             shift
@@ -64,23 +74,27 @@ if [ -z "${PRIVATE_IP}" -o -z "${PUBLIC_IP}" -o -z "${SSH_KEY_FILENAME}" ] ; the
     exit 1
 fi
 
-echo "Installing RPM(s)"
+if [ -z "${SKIP_CLI}" ] ; then
+    echo "Installing CLI RPM"
 
-for rpm_file in ../cli/*.rpm; do
-    rpm_name=$(sudo rpm -qp ${rpm_file})
+    for rpm_file in ../cli/*.rpm; do
+        rpm_name=$(sudo rpm -qp ${rpm_file})
 
-    set +e
-    sudo rpm -q ${rpm_name}
-    rpm_rc=$?
-    set -e
+        set +e
+        sudo rpm -q ${rpm_name}
+        rpm_rc=$?
+        set -e
 
-    if [ ${rpm_rc} -eq 0 ]; then
-        echo "Package ${rpm_file} already installed; skipping"
-    else
-        echo "Installing ${rpm_file}"
-        sudo yum -y install ${rpm_file}
-    fi
-done
+        if [ ${rpm_rc} -eq 0 ]; then
+            echo "Package ${rpm_file} already installed; skipping"
+        else
+            echo "Installing ${rpm_file}"
+            sudo yum -y install ${rpm_file}
+        fi
+    done
+else
+    echo "Skipping CLI installation"
+fi
 
 TEMP_INPUTS=$(mktemp --suffix=.yaml)
 
@@ -120,10 +134,14 @@ sudo chown -R cfyuser:cfyuser /opt/manager/resources/spec
 sudo chmod -R go-w /opt/manager/resources/spec
 
 # Upload Wagons.
-for wagon in ../wagons/*.wgn; do
-    echo "Uploading plugin: ${wagon}"
-    # Skip validation as per https://cloudifysource.atlassian.net/browse/CFY-7443
-    cfy plugins upload --skip-local-plugins-validation ${wagon}
-done
+if [ -z "${SKIP_PLUGINS}" ] ; then
+    for wagon in ../wagons/*.wgn; do
+        echo "Uploading plugin: ${wagon}"
+        # Skip validation as per https://cloudifysource.atlassian.net/browse/CFY-7443
+        cfy plugins upload --skip-local-plugins-validation ${wagon}
+    done
+else
+    echo "Skipping plugins upload"
+fi
 
 echo "Done."
