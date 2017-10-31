@@ -89,13 +89,11 @@ shutil.copy(os.path.join(os.path.dirname(__name__), 'README.md'),
 
 # Copy additional dirs
 for name in os.listdir('resources'):
-    if os.path.isdir(name):
-        shutil.copytree(name, os.path.join(archive_root, name))
+    qualified_name = os.path.join('resources', name)
+    if os.path.isdir(qualified_name):
+        shutil.copytree(qualified_name, os.path.join(archive_root, name))
     else:
-        shutil.copy(name, archive_root)
-
-for x in ['resources', 'bin']:
-    shutil.copytree(x, os.path.join(archive_root, x))
+        shutil.copy(qualified_name, archive_root)
 
 # Create archive.
 # No need in compression as the vast majority of the contents

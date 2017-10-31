@@ -1,9 +1,10 @@
-manager-blueprints-url: https://github.com/cloudify-cosmo/cloudify-manager-blueprints/archive/4.2m7.tar.gz
+manager-blueprints-url: https://github.com/cloudify-cosmo/cloudify-manager-blueprints/archive/master.tar.gz
 cli-package-urls:
-  - http://repository.cloudifysource.org/cloudify/4.2.0/m7-release/cloudify-cli-4.2m7.exe
-  - http://repository.cloudifysource.org/cloudify/4.2.0/m7-release/cloudify-cli-4.2m7.rpm
-  - http://repository.cloudifysource.org/cloudify/4.2.0/m7-release/cloudify-cli-4.2m7.pkg
-mgr-resources-package: http://repository.cloudifysource.org/cloudify/4.2.0/m7-release/cloudify-manager-resources-4.2m7.tar.gz
+  - http://cloudify-release-eu.s3.amazonaws.com/cloudify/4.2.0/ga-release/cloudify-windows-cli_4.2.0-ga.exe
+  - http://cloudify-release-eu.s3.amazonaws.com/cloudify/4.2.0/ga-release/cloudify-cli-4.2.0~ga.el6.x86_64.rpm
+  - http://cloudify-release-eu.s3.amazonaws.com/cloudify/4.2.0/ga-release/cloudify-cli_4.2.0~ga_amd64.deb
+  - http://cloudify-release-eu.s3.amazonaws.com/cloudify/4.2.0/ga-release/cloudify-cli-4.2.0-ga.pkg
+mgr-resources-package: http://cloudify-release-eu.s3.amazonaws.com/cloudify/4.2.0/ga-release/cloudify-manager-resources_4.2.0-ga.tar.gz
 wagon-files:
   - https://github.com/cloudify-cosmo/cloudify-openstack-plugin/releases/download/2.2.0/cloudify_openstack_plugin-2.2.0-py27-none-linux_x86_64-centos-Core.wgn
   - https://github.com/cloudify-cosmo/cloudify-openstack-plugin/releases/download/2.2.0/cloudify_openstack_plugin-2.2.0-py27-none-linux_x86_64-redhat-Maipo.wgn
