@@ -63,6 +63,13 @@ for dsl_resource in dsl_resources:
     os.makedirs(os.path.dirname(dest_location))
     download(dsl_resource['source_path'], dest=dest_location)
 
+archive_resources_dir = os.path.join(archive_root, 'resources')
+os.makedirs(archive_resources_dir)
+
+# Prepare DSL Resources YAML helper file.
+with open(os.path.join(archive_resources_dir, 'dsl-resources.yaml'), mode='w') as f:
+    yaml.dump({ 'dsl_resources' : dsl_resources }, f)
+
 # Obtain CLI packages
 cli_package_urls = configuration['cli-package-urls']
 cli_packages_dir = os.path.join(archive_root, 'cli')
