@@ -138,7 +138,7 @@ private_ip: ${PRIVATE_IP}
 ssh_user: ${SSH_USER}
 ssh_key_filename: ${SSH_KEY_FILENAME}
 dsl_resources:
-  - {'source_path': 'file://$(pwd)/../dsl/spec/cloudify/4.2/types.yaml', 'destination_path': '/spec/cloudify/4.2/types.yaml'}
+  - {'source_path': '$(pwd)/../dsl/spec/cloudify/4.2/types.yaml', 'destination_path': '/spec/cloudify/4.2/types.yaml'}
 manager_resources_package: file://$(pwd)/../manager-resources-package.tar.gz
 ssl_enabled: ${SSL_ENABLED}
 admin_password: ${ADMIN_PASSWORD}
