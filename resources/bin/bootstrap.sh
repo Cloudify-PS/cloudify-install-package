@@ -2,25 +2,30 @@
 
 show_syntax() {
     cat << EOF >&2
-Syntax: ${SCRIPT_NAME} --private-ip <private_ip> --public-ip <public_ip> [--user <ssh_user>]
-        --key <key_file> [--extra <extra_inputs_yaml>] [--no-ssl] [--admin-password <password>]
+Syntax: ${SCRIPT_NAME} --private-ip <private_ip> --public-ip <public_ip> --key <key_file>
+        [--user <ssh_user>] [--extra <extra_inputs_yaml>] [--no-ssl] [--admin-password <password>]
         [--skip-memory-validation] [--skip-plugins] [--skip-cli]
+
+Required parameters:
 
 --private-ip                this machine's IP to be used for internal communications. Usually,
                             this is the machine's private IP.
 --public-ip                 this machine's IP to be used for communicating via the REST API or
                             CLI
---user                      (optional) the user to use for SSH'ing into this machine. If not
-                            provided, the current user is used.
 --key                       private key to use to SSH into this machine.
+
+Optional parameters:
+
+--user                      the user to use for SSH'ing into this machine. If not
+                            provided, the current user is used.
 --extra                     an additional YAML file to use for inputs.
---no-ssl                    (optional) if specified, disable SSL on the REST API layer.
---admin-password            (optional) password to assign to the 'admin' user. If not provided,
+--no-ssl                    if specified, disable SSL on the REST API layer.
+--admin-password            password to assign to the 'admin' user. If not provided,
                             then a password is automatically generated.
 --skip-memory-validation    skip validation of available memory prior to bootstrap
---skip-plugins              (optional) if specified, skip the uploading of plugins to the manager
+--skip-plugins              if specified, skip the uploading of plugins to the manager
                             after bootstrap.
---skip-cli                  (optional) if specified, skip the installation of the CLI RPM before
+--skip-cli                  if specified, skip the installation of the CLI RPM before
                             bootstrap. Note that the CLI RPM must be installed in order for the
                             bootstrap to work.
 EOF
@@ -159,7 +164,7 @@ rm -f ${TEMP_INPUTS}
 
 # We provide an empty dict to dsl_resources in order to avoid the bootstrap
 # process having to go outside. To compensate, just copy the files.
-echo "Copying DSL resources"
+echo "Copying DSL resources..."
 sudo cp -Rv ../dsl/. /opt/manager/resources/
 sudo chown -R cfyuser:cfyuser /opt/manager/resources/spec
 sudo chmod -R go-w /opt/manager/resources/spec
