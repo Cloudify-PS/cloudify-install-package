@@ -32,6 +32,7 @@ EOF
 }
 
 SCRIPT_NAME=$(basename $0)
+SCRIPT_DIR=$(dirname $(readlink -f $0))
 
 set +e
 PARSED_CMDLINE=$(getopt -o '' --long private-ip:,public-ip:,user:,key:,extra:,no-ssl,admin-password:,skip-memory-validation,skip-plugins,skip-cli --name "${SCRIPT_NAME}" -- "$@")
@@ -138,8 +139,8 @@ private_ip: ${PRIVATE_IP}
 ssh_user: ${SSH_USER}
 ssh_key_filename: ${SSH_KEY_FILENAME}
 dsl_resources:
-  - {'source_path': '$(pwd)/../dsl/spec/cloudify/4.2/types.yaml', 'destination_path': '/spec/cloudify/4.2/types.yaml'}
-manager_resources_package: file://$(pwd)/../manager-resources-package.tar.gz
+  - {'source_path': '$(SCRIPT_DIR)/../dsl/spec/cloudify/4.2/types.yaml', 'destination_path': '/spec/cloudify/4.2/types.yaml'}
+manager_resources_package: file://$(SCRIPT_DIR)/../manager-resources-package.tar.gz
 ssl_enabled: ${SSL_ENABLED}
 admin_password: ${ADMIN_PASSWORD}
 EOF
