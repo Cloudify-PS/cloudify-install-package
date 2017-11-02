@@ -3,32 +3,33 @@
 show_syntax() {
     cat << EOF >&2
 Syntax: ${SCRIPT_NAME} --private-ip <private_ip> --public-ip <public_ip> [--user <ssh_user>]
-        --key <key_file> [--extra <extra_inputs_yaml>] [--ssl] [--admin-password <password>]
-        [--skip-plugins] [--skip-cli]
+        --key <key_file> [--extra <extra_inputs_yaml>] [--no-ssl] [--admin-password <password>]
+        [--skip-memory-validation] [--skip-plugins] [--skip-cli]
 
---private-ip        this machine's IP to be used for internal communications. Usually,
-                    this is the machine's private IP.
---public-ip         this machine's IP to be used for communicating via the REST API or
-                    CLI
---user              (optional) the user to use for SSH'ing into this machine. If not
-                    provided, the current user is used.
---key               private key to use to SSH into this machine.
---extra             an additional YAML file to use for inputs.
---ssl               (optional) if specified, enable SSL on the REST API layer.
---admin-password    (optional) password to assign to the 'admin' user. If not provided,
-                    then a password is automatically generated.
---skip-plugins      (optional) if specified, skip the uploading of plugins to the manager
-                    after bootstrap.
---skip-cli          (optional) if specified, skip the installation of the CLI RPM before
-                    bootstrap. Note that the CLI RPM must be installed in order for the
-                    bootstrap to work.
+--private-ip                this machine's IP to be used for internal communications. Usually,
+                            this is the machine's private IP.
+--public-ip                 this machine's IP to be used for communicating via the REST API or
+                            CLI
+--user                      (optional) the user to use for SSH'ing into this machine. If not
+                            provided, the current user is used.
+--key                       private key to use to SSH into this machine.
+--extra                     an additional YAML file to use for inputs.
+--no-ssl                    (optional) if specified, disable SSL on the REST API layer.
+--admin-password            (optional) password to assign to the 'admin' user. If not provided,
+                            then a password is automatically generated.
+--skip-memory-validation    skip validation of available memory prior to bootstrap
+--skip-plugins              (optional) if specified, skip the uploading of plugins to the manager
+                            after bootstrap.
+--skip-cli                  (optional) if specified, skip the installation of the CLI RPM before
+                            bootstrap. Note that the CLI RPM must be installed in order for the
+                            bootstrap to work.
 EOF
 }
 
 SCRIPT_NAME=$(basename $0)
 
 set +e
-PARSED_CMDLINE=$(getopt -o '' --long private-ip:,public-ip:,user:,key:,extra:,ssl,admin-password:,skip-plugins,skip-cli --name "${SCRIPT_NAME}" -- "$@")
+PARSED_CMDLINE=$(getopt -o '' --long private-ip:,public-ip:,user:,key:,extra:,no-ssl,admin-password:,skip-memory-validation,skip-plugins,skip-cli --name "${SCRIPT_NAME}" -- "$@")
 set -e
 
 if [[ $? -ne 0 ]]; then
@@ -42,8 +43,9 @@ EXTRA_INPUTS_YAML=
 ADMIN_PASSWORD=
 SKIP_PLUGINS=
 SKIP_CLI=
-SSL_ENABLED=false
+SSL_ENABLED=true
 SSH_USER=$(id -un)
+MIN_MEMORY_VALIDATION=
 
 while true ; do
     case "$1" in
@@ -63,8 +65,8 @@ while true ; do
             SSH_KEY_FILENAME="$2"
             shift 2
             ;;
-        --ssl)
-            SSL_ENABLED=true
+        --no-ssl)
+            SSL_ENABLED=false
             shift
             ;;
         --extra)
@@ -81,6 +83,10 @@ while true ; do
             ;;
         --skip-cli)
             SKIP_CLI=true
+            shift
+            ;;
+        --skip-memory-validation)
+            MIN_MEMORY_VALIDATION=0
             shift
             ;;
         --)
@@ -132,6 +138,10 @@ ssl_enabled: ${SSL_ENABLED}
 admin_password: ${ADMIN_PASSWORD}
 EOF
 
+if [ -n "${MIN_MEMORY_VALIDATION}" ]; then
+    echo "minimum_required_total_physical_memory_in_mb: ${MIN_MEMORY_VALIDATION}" >> ${TEMP_INPUTS}
+fi
+
 if [ -n "${EXTRA_INPUTS_YAML}" ]; then
     cat ${EXTRA_INPUTS_YAML} >> ${TEMP_INPUTS}
 fi
@@ -150,15 +160,14 @@ rm -f ${TEMP_INPUTS}
 # We provide an empty dict to dsl_resources in order to avoid the bootstrap
 # process having to go outside. To compensate, just copy the files.
 echo "Copying DSL resources"
-sudo cp -R ../dsl/. /opt/manager/resources/
+sudo cp -Rv ../dsl/. /opt/manager/resources/
 sudo chown -R cfyuser:cfyuser /opt/manager/resources/spec
 sudo chmod -R go-w /opt/manager/resources/spec
 
 # Upload Wagons.
 if [ -z "${SKIP_PLUGINS}" ] ; then
     for wagon in ../wagons/*.wgn; do
-        # Skip validation as per https://cloudifysource.atlassian.net/browse/CFY-7443
-        cfy plugins upload --skip-local-plugins-validation ${wagon}
+        cfy plugins upload ${wagon}
     done
 else
     echo "Skipping plugins upload"
