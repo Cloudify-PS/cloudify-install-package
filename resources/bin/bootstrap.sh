@@ -110,7 +110,7 @@ fi
 if [ -z "${SKIP_CLI}" ] ; then
     echo "Installing CLI RPM"
 
-    for rpm_file in ../cli/*.rpm; do
+    for rpm_file in ${SCRIPT_DIR}../cli/*.rpm; do
         rpm_name=$(sudo rpm -qp ${rpm_file})
 
         set +e
@@ -173,13 +173,13 @@ rm -f ${TEMP_DSL_RESOURCES}
 # We provide an empty dict to dsl_resources in order to avoid the bootstrap
 # process having to go outside. To compensate, just copy the files.
 echo "Copying DSL resources..."
-sudo cp -Rv ../dsl/. /opt/manager/resources/
+sudo cp -Rv ${SCRIPT_DIR}../dsl/. /opt/manager/resources/
 sudo chown -R cfyuser:cfyuser /opt/manager/resources/spec
 sudo chmod -R go-w /opt/manager/resources/spec
 
 # Upload Wagons.
 if [ -z "${SKIP_PLUGINS}" ] ; then
-    for wagon in ../wagons/*.wgn; do
+    for wagon in ${SCRIPT_DIR}../wagons/*.wgn; do
         cfy plugins upload ${wagon}
     done
 else
