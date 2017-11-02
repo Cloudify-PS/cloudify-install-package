@@ -53,6 +53,7 @@ with open(os.path.join(mgr_blueprints_dir, 'simple-manager-blueprint.yaml')) as 
     manager_bp = yaml.load(f)
 
 dsl_resources = manager_bp['inputs']['dsl_resources']['default']
+dsl_resources.extend(configuration.get('extra-dsl-resources'))
 
 # Obtain YAML files
 dsl_resources_dir = os.path.join(archive_root, 'dsl')
