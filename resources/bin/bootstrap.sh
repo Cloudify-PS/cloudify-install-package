@@ -138,9 +138,7 @@ public_ip: ${PUBLIC_IP}
 private_ip: ${PRIVATE_IP}
 ssh_user: ${SSH_USER}
 ssh_key_filename: ${SSH_KEY_FILENAME}
-dsl_resources:
-  - {'source_path': '$(SCRIPT_DIR)/../dsl/spec/cloudify/4.2/types.yaml', 'destination_path': '/spec/cloudify/4.2/types.yaml'}
-manager_resources_package: file://$(SCRIPT_DIR)/../manager-resources-package.tar.gz
+manager_resources_package: file://${SCRIPT_DIR}/../manager-resources-package.tar.gz
 ssl_enabled: ${SSL_ENABLED}
 admin_password: ${ADMIN_PASSWORD}
 EOF
@@ -153,16 +151,24 @@ if [ -n "${EXTRA_INPUTS_YAML}" ]; then
     cat ${EXTRA_INPUTS_YAML} >> ${TEMP_INPUTS}
 fi
 
+TEMP_DSL_RESOURCES=$(mktemp --suffix=.yaml)
+sed -e 's#http:\/\/www.getcloudify.org#'"${SCRIPT_DIR}/../dsl"'#' ${SCRIPT_DIR}/../resources/dsl-resources.yaml > ${TEMP_DSL_RESOURCES}
+
 echo "Inputs file:"
 echo "------------"
 cat ${TEMP_INPUTS}
 echo "------------"
+echo "DSL resources file:"
+echo "-------------------"
+cat ${TEMP_DSL_RESOURCES}
+echo "-------------------"
 
 # Perform the bootstrap.
 echo "Starting the bootstrap process"
-cfy bootstrap /opt/cfy/cloudify-manager-blueprints/simple-manager-blueprint.yaml -i ${TEMP_INPUTS} -vv
+cfy bootstrap /opt/cfy/cloudify-manager-blueprints/simple-manager-blueprint.yaml -i ${TEMP_INPUTS} -i ${TEMP_DSL_RESOURCES} -vv
 
 rm -f ${TEMP_INPUTS}
+rm -f ${TEMP_DSL_RESOURCES}
 
 # We provide an empty dict to dsl_resources in order to avoid the bootstrap
 # process having to go outside. To compensate, just copy the files.
