@@ -152,7 +152,7 @@ if [ -n "${EXTRA_INPUTS_YAML}" ]; then
 fi
 
 TEMP_DSL_RESOURCES=$(mktemp --suffix=.yaml)
-sed -e 's#http:\/\/www.getcloudify.org#'"${SCRIPT_DIR}/../dsl"'#' ${SCRIPT_DIR}/../resources/dsl-resources.yaml > ${TEMP_DSL_RESOURCES}
+sed -e 's#@root@#'"${SCRIPT_DIR}/../dsl"'#' ${SCRIPT_DIR}/../resources/dsl-resources.yaml > ${TEMP_DSL_RESOURCES}
 
 echo "Inputs file:"
 echo "------------"

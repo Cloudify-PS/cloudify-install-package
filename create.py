@@ -68,6 +68,9 @@ archive_resources_dir = os.path.join(archive_root, 'resources')
 os.makedirs(archive_resources_dir)
 
 # Prepare DSL Resources YAML helper file.
+for dsl_resource in dsl_resources:
+    dsl_resource['source_path'] = '@root@{0}'.format(dsl_resource['destination_path'])
+
 with open(os.path.join(archive_resources_dir, 'dsl-resources.yaml'), mode='w') as f:
     yaml.dump({ 'dsl_resources' : dsl_resources }, f)
 
