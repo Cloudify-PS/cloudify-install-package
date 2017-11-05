@@ -129,6 +129,10 @@ else
     echo "Skipping CLI installation"
 fi
 
+# Handle prerequisites
+
+sudo yum -y install ${SCRIPT_DIR}/../prereq/*.rpm
+
 TEMP_INPUTS=$(mktemp --suffix=.yaml)
 
 echo "Writing temporary inputs into ${TEMP_INPUTS}"
