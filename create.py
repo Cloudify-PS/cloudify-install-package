@@ -65,6 +65,14 @@ os.mkdir(mgr_blueprints_dir)
 
 print "Accumulating contents into {0}".format(archive_root)
 
+# Copy prerequisite RPM's
+
+rpms_dir = os.path.join(archive_root, 'prereq')
+os.mkdir(rpms_dir)
+prerequisite_rpms = configuration['python-prereq-rpms']
+for rpm in prerequisite_rpms:
+    download(rpm, dest_dir=rpms_dir)
+
 # Obtain Manager Blueprints
 
 mgr_blueprints_url = configuration['manager-blueprints-url']
@@ -142,13 +150,6 @@ for name in os.listdir('resources'):
         shutil.copytree(qualified_name, os.path.join(archive_root, name))
     else:
         shutil.copy(qualified_name, archive_root)
-
-# Copy prerequisite RPM's
-
-rpms_dir = os.path.join(archive_root, 'prereq')
-prerequisite_rpms = configuration['python-prereq-rpms']
-for rpm in prerequisite_rpms:
-    download(rpm, dest_dir=rpms_dir)
 
 # Create archive.
 # No need in compression as the vast majority of the contents
