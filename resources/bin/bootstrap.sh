@@ -4,7 +4,7 @@ show_syntax() {
     cat << EOF >&2
 Syntax: ${SCRIPT_NAME} --private-ip <private_ip> --public-ip <public_ip> --key <key_file>
         [--user <ssh_user>] [--extra <extra_inputs_yaml>] [--no-ssl] [--admin-password <password>]
-        [--skip-memory-validation] [--skip-plugins] [--skip-cli]
+        [--skip-memory-validation] [--skip-plugins] [--skip-cli] [--skip-prereq]
 
 Required parameters:
 
@@ -28,6 +28,9 @@ Optional parameters:
 --skip-cli                  if specified, skip the installation of the CLI RPM before
                             bootstrap. Note that the CLI RPM must be installed in order for the
                             bootstrap to work.
+--skip-prereq               if specified, skip the detection and (potential) installation of
+                            prerequisite packages which are not delivered as part of the
+                            Cloudify Manager bundle
 EOF
 }
 
@@ -35,7 +38,7 @@ SCRIPT_NAME=$(basename $0)
 SCRIPT_DIR=$(dirname $(readlink -f $0))
 
 set +e
-PARSED_CMDLINE=$(getopt -o '' --long private-ip:,public-ip:,user:,key:,extra:,no-ssl,admin-password:,skip-memory-validation,skip-plugins,skip-cli --name "${SCRIPT_NAME}" -- "$@")
+PARSED_CMDLINE=$(getopt -o '' --long private-ip:,public-ip:,user:,key:,extra:,no-ssl,admin-password:,skip-memory-validation,skip-plugins,skip-cli,skip-prereq --name "${SCRIPT_NAME}" -- "$@")
 set -e
 
 if [[ $? -ne 0 ]]; then
@@ -49,6 +52,7 @@ EXTRA_INPUTS_YAML=
 ADMIN_PASSWORD=
 SKIP_PLUGINS=
 SKIP_CLI=
+SKIP_PREREQ=
 SSL_ENABLED=true
 SSH_USER=$(id -un)
 MIN_MEMORY_VALIDATION=
@@ -95,6 +99,10 @@ while true ; do
             MIN_MEMORY_VALIDATION=0
             shift
             ;;
+        --skip-prereq)
+            SKIP_PREREQ=true
+            shift
+            ;;
         --)
             shift
             break
@@ -131,7 +139,12 @@ fi
 
 # Handle prerequisites
 
-sudo yum -y install ${SCRIPT_DIR}/../prereq/*.rpm
+if [ -z "${SKIP_PREREQ}" ] ; then
+    echo "Installing prerequisite RPM's if not already installed"
+    sudo yum -y install ${SCRIPT_DIR}/../prereq/*.rpm
+else
+    echo "Skipping prerequisites installation"
+fi
 
 TEMP_INPUTS=$(mktemp --suffix=.yaml)
 

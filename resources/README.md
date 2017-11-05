@@ -13,11 +13,22 @@ This package contains all artifacts required in order to:
          bootstrap.
 * `resources`: additional helper artifacts.
 * `wagons`: offline plugin packages ("Wagons"), for the latest official Cloudify plugins.
+* `prereq`: prerequisite system-level RPM's that are not provided with Cloudify Manager 
 
 ## Bootstrapping a Manager
 
 Bootstrapping a manager can be done by using the `bin/bootstrap.sh` script. Run it without arguments
 in order to see available parameters.
+
+### Process
+
+1. Install Python system-level prerequisites, if not provided by the operating system
+2. Install the CLI RPM (unless asked to skip)
+3. Perform bootstrap
+4. Copy all official DSL resources
+5. Upload all official plugin packages
+
+### Parameters
 
 The following parameters must be specified:
 
