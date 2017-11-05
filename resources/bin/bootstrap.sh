@@ -141,7 +141,7 @@ fi
 
 if [ -z "${SKIP_PREREQ}" ] ; then
     echo "Installing prerequisite RPM's if not already installed"
-    sudo yum -y install ${SCRIPT_DIR}/../prereq/*.rpm
+    sudo yum -y --disablerepo=* install ${SCRIPT_DIR}/../prereq/*.rpm
 else
     echo "Skipping prerequisites installation"
 fi
