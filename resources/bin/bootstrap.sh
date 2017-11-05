@@ -130,7 +130,7 @@ if [ -z "${SKIP_CLI}" ] ; then
             echo "Package ${rpm_file} already installed; skipping"
         else
             echo "Installing ${rpm_file}"
-            sudo yum -y install ${rpm_file}
+            sudo yum -y --disablerepo=* install ${rpm_file}
         fi
     done
 else
@@ -141,7 +141,14 @@ fi
 
 if [ -z "${SKIP_PREREQ}" ] ; then
     echo "Installing prerequisite RPM's if not already installed"
-    sudo yum -y install ${SCRIPT_DIR}/../prereq/*.rpm
+    set +e
+    sudo yum -y --disablerepo=* install ${SCRIPT_DIR}/../prereq/*.rpm
+    yum_rc=$?
+    set -e
+
+    if [ $yum_rc -ne 0 ] ; then
+        echo "Prerequisite installation ended with return code ${yum_rc}. Most likely, this means that nothing required installation."
+    fi
 else
     echo "Skipping prerequisites installation"
 fi
