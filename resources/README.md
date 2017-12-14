@@ -55,3 +55,6 @@ Optional parameters:
 * `--skip-plugins`: skips the post-bootstrap step of uploading all of the official Cloudify plugin packages.
 * `--skip-cli`: skips the pre-bootstrap step of installing the CLI RPM. Note that the CLI RPM installation is
   required for the bootstrap process to work.
+* `--skip-prereq`: skips installing prerequisites (if not already installed), or uninstalling potentially-interfering
+  packages (if installed).
+* `--skip-yum-config`: skips stopping and disabling the `yum-cron` service (if it exists).

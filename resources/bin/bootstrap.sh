@@ -4,7 +4,7 @@ show_syntax() {
     cat << EOF >&2
 Syntax: ${SCRIPT_NAME} --private-ip <private_ip> --public-ip <public_ip> --key <key_file>
         [--user <ssh_user>] [--extra <extra_inputs_yaml>] [--no-ssl] [--admin-password <password>]
-        [--skip-memory-validation] [--skip-plugins] [--skip-cli] [--skip-prereq]
+        [--skip-memory-validation] [--skip-plugins] [--skip-cli] [--skip-prereq] [--skip-yum-config]
 
 Required parameters:
 
@@ -30,15 +30,29 @@ Optional parameters:
                             bootstrap to work.
 --skip-prereq               if specified, skip the detection and (potential) installation of
                             prerequisite packages which are not delivered as part of the
-                            Cloudify Manager bundle
+                            Cloudify Manager bundle, as well as uninstalling potentially-interfering
+                            packages
+--skip-yum-config           if specified, skip disabling the yum-cron service (if it is installed)
 EOF
+}
+
+yum_remove_if_installed() {
+    package_name=$1
+    echo "Checking if package ${package_name} is installed..."
+    if sudo yum -y --disablerepo=* list installed "${package_name}" >/dev/null 2>&1; then
+        echo "Package ${package_name} is installed; removing it"
+        sudo yum -y --disablerepo=* remove ${package_name}
+        echo "Package ${package_name} removed"
+    else
+        echo "Package ${package_name} not installed; skipping"
+    fi
 }
 
 SCRIPT_NAME=$(basename $0)
 SCRIPT_DIR=$(dirname $(readlink -f $0))
 
 set +e
-PARSED_CMDLINE=$(getopt -o '' --long private-ip:,public-ip:,user:,key:,extra:,no-ssl,admin-password:,skip-memory-validation,skip-plugins,skip-cli,skip-prereq --name "${SCRIPT_NAME}" -- "$@")
+PARSED_CMDLINE=$(getopt -o '' --long private-ip:,public-ip:,user:,key:,extra:,no-ssl,admin-password:,skip-memory-validation,skip-plugins,skip-cli,skip-prereq,skip-yum-config --name "${SCRIPT_NAME}" -- "$@")
 set -e
 
 if [[ $? -ne 0 ]]; then
@@ -53,6 +67,7 @@ ADMIN_PASSWORD=
 SKIP_PLUGINS=
 SKIP_CLI=
 SKIP_PREREQ=
+SKIP_YUM_CONFIG=
 SSL_ENABLED=true
 SSH_USER=$(id -un)
 MIN_MEMORY_VALIDATION=
@@ -103,6 +118,10 @@ while true ; do
             SKIP_PREREQ=true
             shift
             ;;
+        --skip-yum-config)
+            SKIP_YUM_CONFIG=true
+            shift
+            ;;
         --)
             shift
             break
@@ -113,6 +132,28 @@ done
 if [ -z "${PRIVATE_IP}" -o -z "${PUBLIC_IP}" -o -z "${SSH_KEY_FILENAME}" ] ; then
     show_syntax
     exit 1
+fi
+
+# Handle prerequisites
+
+if [ -z "${SKIP_PREREQ}" ] ; then
+    echo "Removing python-pip and python-virtualenv if they are installed"
+
+    yum_remove_if_installed python-pip
+    yum_remove_if_installed python2-pip
+    yum_remove_if_installed python-virtualenv
+
+    echo "Installing prerequisite RPM's if not already installed"
+    set +e
+    sudo yum -y --disablerepo=* install ${SCRIPT_DIR}/../prereq/*.rpm
+    yum_rc=$?
+    set -e
+
+    if [ $yum_rc -ne 0 ] ; then
+        echo "Prerequisite installation ended with return code ${yum_rc}. Most likely, this means that nothing required installation."
+    fi
+else
+    echo "Skipping prerequisites installation"
 fi
 
 if [ -z "${SKIP_CLI}" ] ; then
@@ -137,21 +178,30 @@ else
     echo "Skipping CLI installation"
 fi
 
-# Handle prerequisites
+# Handle yum configuration
 
-if [ -z "${SKIP_PREREQ}" ] ; then
-    echo "Installing prerequisite RPM's if not already installed"
+if [ -z "${SKIP_YUM_CONFIG}" ] ; then
+    echo "Checking if yum-cron is enabled or started"
     set +e
-    sudo yum -y --disablerepo=* install ${SCRIPT_DIR}/../prereq/*.rpm
-    yum_rc=$?
+    sudo systemctl is-enabled yum-cron
+    enabled_rc=$?
+    sudo systemctl is-active yum-cron
+    active_rc=$?
     set -e
 
-    if [ $yum_rc -ne 0 ] ; then
-        echo "Prerequisite installation ended with return code ${yum_rc}. Most likely, this means that nothing required installation."
+    if [ $active_rc -eq 0 ] ; then
+        echo "yum-cron is active; stopping it"
+        sudo systemctl stop yum-cron || echo "WARNING: Failed stopping yum-cron, rc=$?"
+    fi
+
+    if [ $enabled_rc -eq 0 ] ; then
+        echo "yum-cron is enabled; disabling it"
+        sudo systemctl disable yum-cron || echo "WARNING: Failed disabling yum-cron, rc=$?"
     fi
 else
-    echo "Skipping prerequisites installation"
+    echo "Skipping yum-cron detection"
 fi
+
 
 TEMP_INPUTS=$(mktemp --suffix=.yaml)
 

@@ -25,7 +25,7 @@ def download(url, dest=None, dest_dir=None):
     :param dest_dir: destination directory to write to
     :type dest_dir: str
     """
-    curl_args = ['curl', '-k', '-L', url]
+    curl_args = ['curl', '-k', '-L', '-f', url]
     cwd = None
     if dest:
         curl_args.extend(['-o', dest])
