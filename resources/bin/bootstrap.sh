@@ -137,6 +137,29 @@ fi
 # Handle prerequisites
 
 if [ -z "${SKIP_PREREQ}" ] ; then
+    # If pip is installed in any way, and virtualenv is installed through it,
+    # then remove virtualenv. This is done in order to cope with CFY-7678.
+
+    set +e
+    pip_ind=$(command -v pip)
+    set -e
+
+    if [ -n "${pip_ind}" ] ; then
+        echo "pip is system-available; checking if virtualenv is installed..."
+        set +e
+        virtualenv_ind=$(pip show virtualenv)
+        set -e
+
+        if [ -n "${virtualenv_ind}" ] ; then
+            echo "virtualenv is available; removing it"
+            sudo pip uninstall -y -v virtualenv
+        else
+            echo "virtualenv is not installed through system-available pip; skipping"
+        fi
+    else
+        echo "pip is not system-available"
+    fi
+
     echo "Removing python-pip and python-virtualenv if they are installed"
 
     yum_remove_if_installed python-pip

@@ -9,6 +9,7 @@ import shutil
 ARG_CONFIG_FILE = 'config-file'
 ARG_OUTPUT_FILE = 'output-file'
 
+script_dir = os.path.dirname(os.path.realpath(__file__))
 
 def download(url, dest=None, dest_dir=None):
     """
@@ -137,15 +138,10 @@ os.makedirs(wagon_dir)
 for wagon in wagon_files:
     download(wagon, dest_dir=wagon_dir)
 
-# Copy README file
-
-shutil.copy(os.path.join(os.path.dirname(__name__), 'README.md'),
-            archive_root)
-
 # Copy additional dirs
 
-for name in os.listdir('resources'):
-    qualified_name = os.path.join('resources', name)
+for name in os.listdir(os.path.join(script_dir, 'resources')):
+    qualified_name = os.path.join(script_dir, 'resources', name)
     if os.path.isdir(qualified_name):
         shutil.copytree(qualified_name, os.path.join(archive_root, name))
     else:
