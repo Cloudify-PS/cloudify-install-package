@@ -45,20 +45,20 @@ plugins:
     wagons:
       - http://repository.cloudifysource.org/cloudify/wagons/cloudify-fabric-plugin/1.5.1/cloudify_fabric_plugin-1.5.1-py27-none-linux_x86_64-centos-Core.wgn
       - http://repository.cloudifysource.org/cloudify/wagons/cloudify-fabric-plugin/1.5.1/cloudify_fabric_plugin-1.5.1-py27-none-linux_x86_64-redhat-Maipo.wgn
-  # GCP 1.3.0
-  - dsl: http://www.getcloudify.org/spec/gcp-plugin/1.3.0/plugin.yaml
+  # GCP 1.3.0.1
+  - dsl: http://www.getcloudify.org/spec/gcp-plugin/1.3.0.1/plugin.yaml
     wagons:
-      - http://repository.cloudifysource.org/cloudify/wagons/cloudify-gcp-plugin/1.3.0/cloudify_gcp_plugin-1.3.0-py27-none-linux_x86_64-centos-Core.wgn
-      - http://repository.cloudifysource.org/cloudify/wagons/cloudify-gcp-plugin/1.3.0/cloudify_gcp_plugin-1.3.0-py27-none-linux_x86_64-redhat-Maipo.wgn
+      - http://repository.cloudifysource.org/cloudify/wagons/cloudify-gcp-plugin/1.3.0.1/cloudify_gcp_plugin-1.3.0.1-py27-none-linux_x86_64-centos-Core.wgn
+      - http://repository.cloudifysource.org/cloudify/wagons/cloudify-gcp-plugin/1.3.0.1/cloudify_gcp_plugin-1.3.0.1-py27-none-linux_x86_64-redhat-Maipo.wgn
   # Host Pool 1.5
   - dsl: http://www.getcloudify.org/spec/host-pool-plugin/1.5/plugin.yaml
     wagons:
       - http://repository.cloudifysource.org/cloudify/wagons/cloudify-host-pool-plugin/1.5/cloudify_host_pool_plugin-1.5-py27-none-linux_x86_64-centos-Core.wgn
-  # Kubernetes 1.4.0
-  - dsl: http://www.getcloudify.org/spec/kubernetes-plugin/1.4.0/plugin.yaml
+  # Kubernetes 2.0.0
+  - dsl: http://www.getcloudify.org/spec/kubernetes-plugin/2.0.0/plugin.yaml
     wagons:
-      - http://repository.cloudifysource.org/cloudify/wagons/cloudify-kubernetes-plugin/1.4.0/cloudify_kubernetes_plugin-1.4.0-py27-none-linux_x86_64-centos-Core.wgn
-      - http://repository.cloudifysource.org/cloudify/wagons/cloudify-kubernetes-plugin/1.4.0/cloudify_kubernetes_plugin-1.4.0-py27-none-linux_x86_64-redhat-Maipo.wgn
+      - http://repository.cloudifysource.org/cloudify/wagons/cloudify-kubernetes-plugin/2.0.0/cloudify_kubernetes_plugin-2.0.0-py27-none-linux_x86_64-centos-Core.wgn
+      - http://repository.cloudifysource.org/cloudify/wagons/cloudify-kubernetes-plugin/2.0.0/cloudify_kubernetes_plugin-2.0.0-py27-none-linux_x86_64-redhat-Maipo.wgn
   # Netconf 0.2.0
   - dsl: http://www.getcloudify.org/spec/netconf-plugin/0.2.0/plugin.yaml
     wagons:
@@ -77,11 +77,11 @@ plugins:
     wagons:
       - http://repository.cloudifysource.org/cloudify/wagons/cloudify-psutil-plugin/1.0.2/cloudify_psutil_plugin-1.0.2-py27-none-linux_x86_64.wgn
       - http://repository.cloudifysource.org/cloudify/wagons/cloudify-psutil-plugin/1.0.2/cloudify_psutil_plugin-1.0.2-py27-none-win32-none-none.wgn
-  # Utilities 1.4.2
-  - dsl: http://www.getcloudify.org/spec/utilities-plugin/1.4.2/plugin.yaml
+  # Utilities 1.4.2.1
+  - dsl: http://www.getcloudify.org/spec/utilities-plugin/1.4.2.1/plugin.yaml
     wagons:
-      - https://github.com/cloudify-incubator/cloudify-utilities-plugin/releases/download/1.4.2/cloudify_utilities_plugin-1.4.2-py27-none-linux_x86_64-centos-Core.wgn
-      - https://github.com/cloudify-incubator/cloudify-utilities-plugin/releases/download/1.4.2/cloudify_utilities_plugin-1.4.2-py27-none-linux_x86_64-redhat-Maipo.wgn
+      - http://repository.cloudifysource.org/cloudify/wagons/cloudify-utilities-plugin/1.4.2.1/cloudify_utilities_plugin-1.4.2.1-py27-none-linux_x86_64-centos-Core.wgn
+      - http://repository.cloudifysource.org/cloudify/wagons/cloudify-utilities-plugin/1.4.2.1/cloudify_utilities_plugin-1.4.2.1-py27-none-linux_x86_64-redhat-Maipo.wgn
   # vSphere 2.3.0
   - dsl: http://www.getcloudify.org/spec/vsphere-plugin/2.3.0/plugin.yaml
     wagons:
