@@ -62,7 +62,8 @@ plugins:
   # Netconf 0.2.0
   - dsl: http://www.getcloudify.org/spec/netconf-plugin/0.2.0/plugin.yaml
     wagons:
-      - http://repository.cloudifysource.org/cloudify/wagons/cloudify-netconf-plugin/0.2.0/cloudify_netconf_plugin-0.2.0-py27-none-linux_x86_64.wgn
+      - http://repository.cloudifysource.org/cloudify/wagons/cloudify-netconf-plugin/0.2.0/cloudify_netconf_plugin-0.2.0-py27-none-linux_x86_64-centos-Core.wgn
+      - http://repository.cloudifysource.org/cloudify/wagons/cloudify-netconf-plugin/0.2.0/cloudify_netconf_plugin-0.2.0-py27-none-linux_x86_64-redhat-Maipo.wgn
   # NSX 1.1
   - dsl: http://www.getcloudify.org/spec/nsx-plugin/1.1/plugin.yaml
     wagons:
