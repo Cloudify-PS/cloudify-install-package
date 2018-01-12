@@ -152,7 +152,7 @@ if [ -z "${SKIP_PREREQ}" ] ; then
 
         if [ -n "${virtualenv_ind}" ] ; then
             echo "virtualenv is available; removing it"
-            sudo pip uninstall -y -v --no-index virtualenv
+            sudo pip uninstall -y -v --disable-pip-version-check virtualenv
         else
             echo "virtualenv is not installed through system-available pip; skipping"
         fi
