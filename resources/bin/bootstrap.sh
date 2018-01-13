@@ -23,8 +23,6 @@ Optional parameters:
 --admin-password            password to assign to the 'admin' user. If not provided,
                             then a password is automatically generated.
 --skip-memory-validation    skip validation of available memory prior to bootstrap
---skip-plugins              if specified, skip the uploading of plugins to the manager
-                            after bootstrap.
 --skip-cli                  if specified, skip the installation of the CLI RPM before
                             bootstrap. Note that the CLI RPM must be installed in order for the
                             bootstrap to work.
@@ -52,7 +50,7 @@ SCRIPT_NAME=$(basename $0)
 SCRIPT_DIR=$(dirname $(readlink -f $0))
 
 set +e
-PARSED_CMDLINE=$(getopt -o '' --long private-ip:,public-ip:,user:,key:,extra:,no-ssl,admin-password:,skip-memory-validation,skip-plugins,skip-cli,skip-prereq,skip-yum-config --name "${SCRIPT_NAME}" -- "$@")
+PARSED_CMDLINE=$(getopt -o '' --long private-ip:,public-ip:,user:,key:,extra:,no-ssl,admin-password:,skip-memory-validation,skip-cli,skip-prereq,skip-yum-config --name "${SCRIPT_NAME}" -- "$@")
 set -e
 
 if [[ $? -ne 0 ]]; then
@@ -64,7 +62,6 @@ eval set -- "${PARSED_CMDLINE}"
 
 EXTRA_INPUTS_YAML=
 ADMIN_PASSWORD=
-SKIP_PLUGINS=
 SKIP_CLI=
 SKIP_PREREQ=
 SKIP_YUM_CONFIG=
@@ -101,10 +98,6 @@ while true ; do
         --admin-password)
             ADMIN_PASSWORD="$2"
             shift 2
-            ;;
-        --skip-plugins)
-            SKIP_PLUGINS=true
-            shift
             ;;
         --skip-cli)
             SKIP_CLI=true
@@ -275,12 +268,13 @@ sudo chown -R cfyuser:cfyuser /opt/manager/resources/spec
 sudo chmod -R go-w /opt/manager/resources/spec
 
 # Upload Wagons.
-if [ -z "${SKIP_PLUGINS}" ] ; then
-    for wagon in ${SCRIPT_DIR}/../wagons/*.wgn; do
-        cfy plugins upload ${wagon}
-    done
-else
-    echo "Skipping plugins upload"
-fi
+# REMOVED as per CFY-7783. User should upload plugins themselves.
+#if [ -z "${SKIP_PLUGINS}" ] ; then
+#    for wagon in ${SCRIPT_DIR}/../wagons/*.wgn; do
+#        cfy plugins upload ${wagon}
+#    done
+#else
+#    echo "Skipping plugins upload"
+#fi
 
-echo "Done."
+echo "Done. Now you may upload plugins by using the 'cfy plugins upload' command; plugins are available in $(readlink -f ${SCRIPT_DIR}/../wagons)."
