@@ -52,7 +52,6 @@ Optional parameters:
 * `--admin-password`: explicitly set the administrator user's password. If omitted, a random password
   will be generated.
 * `--skip-memory-validation`: if specified, skip the validation of available memory.
-* `--skip-plugins`: skips the post-bootstrap step of uploading all of the official Cloudify plugin packages.
 * `--skip-cli`: skips the pre-bootstrap step of installing the CLI RPM. Note that the CLI RPM installation is
   required for the bootstrap process to work.
 * `--skip-prereq`: skips installing prerequisites (if not already installed), or uninstalling potentially-interfering
