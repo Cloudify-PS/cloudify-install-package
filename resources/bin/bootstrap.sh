@@ -5,6 +5,7 @@ show_syntax() {
 Syntax: ${SCRIPT_NAME} --private-ip <private_ip> --public-ip <public_ip> --key <key_file>
         [--user <ssh_user>] [--extra <extra_inputs_yaml>] [--no-ssl] [--admin-password <password>]
         [--skip-memory-validation] [--skip-plugins] [--skip-cli] [--skip-prereq] [--skip-yum-config]
+        [--skip-disable-firewall]
 
 Required parameters:
 
@@ -31,6 +32,8 @@ Optional parameters:
                             Cloudify Manager bundle, as well as uninstalling potentially-interfering
                             packages
 --skip-yum-config           if specified, skip disabling the yum-cron service (if it is installed)
+--skip-disable-firewall     if specified, the firewall service (firewalld) will not be stopped before
+                            bootstrap
 EOF
 }
 
@@ -50,7 +53,7 @@ SCRIPT_NAME=$(basename $0)
 SCRIPT_DIR=$(dirname $(readlink -f $0))
 
 set +e
-PARSED_CMDLINE=$(getopt -o '' --long private-ip:,public-ip:,user:,key:,extra:,no-ssl,admin-password:,skip-memory-validation,skip-cli,skip-prereq,skip-yum-config --name "${SCRIPT_NAME}" -- "$@")
+PARSED_CMDLINE=$(getopt -o '' --long private-ip:,public-ip:,user:,key:,extra:,no-ssl,admin-password:,skip-memory-validation,skip-cli,skip-prereq,skip-yum-config,skip-disable-firewall --name "${SCRIPT_NAME}" -- "$@")
 set -e
 
 if [[ $? -ne 0 ]]; then
@@ -68,6 +71,7 @@ SKIP_YUM_CONFIG=
 SSL_ENABLED=true
 SSH_USER=$(id -un)
 MIN_MEMORY_VALIDATION=
+SKIP_DISABLE_FIREWALL=
 
 while true ; do
     case "$1" in
@@ -113,6 +117,10 @@ while true ; do
             ;;
         --skip-yum-config)
             SKIP_YUM_CONFIG=true
+            shift
+            ;;
+        --skip-disable-firewall)
+            SKIP_DISABLE_FIREWALL=true
             shift
             ;;
         --)
@@ -218,6 +226,22 @@ else
     echo "Skipping yum-cron detection"
 fi
 
+# Handle firewalld
+
+if [ -z "${SKIP_DISABLE_FIREWALL}" ] ; then
+    echo "Disabling firewall if applicable"
+    set +e
+    sudo systemctl is-active firewalld
+    active_rc=$?
+    set -e
+
+    if [ $active_rc -eq 0 ] ; then
+        echo "Firewall is active; stopping it"
+        sudo systemctl stop firewalld || echo "WARNING: Failed stopping firewall, rc=$?"
+    fi
+else
+    echo "Skipping disabling firewall"
+fi
 
 TEMP_INPUTS=$(mktemp --suffix=.yaml)
 
